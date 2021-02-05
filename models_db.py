@@ -24,6 +24,14 @@ class Insumos(db.Entity):
     @property
     def valor_por_unidad(self):
         return (self.valor_de_compra * self.merma) + self.valor_de_compra
+    # abreviatura de la unidad
+    @property
+    def unidad_abrev(self):
+        return self.unidad.abrev
+    # nombre de la unidad
+    @property
+    def unidad_nombre(self):
+        return self.unidad.nombre
 
 class Recetas(db.Entity):
     nombre = Required(str)
@@ -50,12 +58,16 @@ class Ingredientes(db.Entity):
     cantidad = Required(float)
     # heredado del insumo
     @property
-    def unidad(self):
-        self.insumo.unidad
+    def unidad_abrev(self):
+        return self.insumo.unidad_abrev
+    # heredado del insumo
+    @property
+    def unidad_nombre(self):
+        return self.insumo.unidad_nombre
     # heredado del insumo
     @property
     def valor_por_unidad(self):
-        self.insumo.valor_por_unidad
+        return self.insumo.valor_por_unidad
     # costo del ingrediente para la cantidad a usar en la receta
     @property
     def costo_por_unidad_utilizada(self):
