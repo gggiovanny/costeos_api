@@ -1,0 +1,18 @@
+# vs code folders
+/.vscode
+/.vscode/*
+/.history
+# python cached files
+*.pyc
+__pycache__
+# logs extensions
+*.npy
+*.csv
+# .sqlite DBs
+*.sqlite
+# test files
+test.*
+# documents
+*.xls
+*.xlsx
+# specific files
