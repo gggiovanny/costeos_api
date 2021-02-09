@@ -36,15 +36,12 @@ class Insumos(db.Entity):
 class Recetas(db.Entity):
     nombre = Required(str)
     porciones = Required(int)
-    tiempo_elaboracion = Required(float) # en horas
+    tiempo_elaboracion = Required(float) # en horas TODO: volverlo time y recibir el dato con un componente
     ingredientes = Set(lambda:Ingredientes)
     # costo total del platillo
     @property
     def costo_del_platillo(self):
-        suma = 0.0
-        for ing in self.ingredientes:
-            suma += ing.costo_por_unidad_utilizada
-        return suma
+        return sum(i.costo_por_unidad_utilizada for i in self.ingredientes)
     # Costo fijo por día laborado
     # Costo Variable
     # Costo por platillo
@@ -192,15 +189,13 @@ def insertData():
         ingredientes=ing_mazapan_chocolate
     )
     print(mazapan_chocolate.costo_del_platillo)
-def connect(in_memory_database = True):
+def connect():
     # conectando a la base de datos
-    if in_memory_database:
-        db.bind(provider='sqlite', filename=':memory:') # in memory database
-    else:
-        db.bind(provider='sqlite', filename='cache.sqlite', create_db=True) # file database
+    db.bind(provider='sqlite', filename='cache.sqlite', create_db=True) # file database
     # mapeando modelos a la base de datos
     db.generate_mapping(create_tables=True)
     
 
-connect(False)
-insertData()
+if __name__ == "__main__":
+    connect()
+    insertData()
