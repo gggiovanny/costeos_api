@@ -40,7 +40,7 @@ class Recetas(db.Entity):
     ingredientes = Set(lambda:Ingredientes)
     # costo total del platillo
     @property
-    def costo_del_platillo(self):
+    def costo(self):
         return sum(i.costo_por_unidad_utilizada for i in self.ingredientes)
     # Costo fijo por día laborado
     # Costo Variable
@@ -69,6 +69,20 @@ class Ingredientes(db.Entity):
     @property
     def costo_por_unidad_utilizada(self):
         return self.insumo.valor_por_unidad * self.cantidad
+
+@db_session
+def analizarReceta(id, precio_de_venta, horas_jornada=8, dias_mes=30):
+    receta = Recetas.get(id=id)
+    total_costos_fijos = sum(c.costo_mensual for c in CostosFijos)
+    analisis = {}
+    analisis['costo_fijo_por_dia_laborado'] = total_costos_fijos/dias_mes
+    analisis['costo_variable'] = receta.costo + ((analisis['costo_fijo_por_dia_laborado'] / horas_jornada)* receta.tiempo_elaboracion)
+    analisis['costo_por_platillo'] = analisis['costo_variable'] / receta.porciones
+    analisis['precio_de_venta'] = precio_de_venta
+    analisis['margen_de_contribucion'] = precio_de_venta - analisis['costo_por_platillo']
+    analisis['porcentaje_utilidad'] = analisis['margen_de_contribucion'] / precio_de_venta
+    analisis['porcentaje_de_costo'] = precio_de_venta / analisis['costo_por_platillo']
+    return analisis
 
 @db_session
 def insertData():
@@ -188,7 +202,7 @@ def insertData():
         tiempo_elaboracion=0.6,
         ingredientes=ing_mazapan_chocolate
     )
-    print(mazapan_chocolate.costo_del_platillo)
+    print(mazapan_chocolate.costo)
 def connect():
     # conectando a la base de datos
     db.bind(provider='sqlite', filename='cache.sqlite', create_db=True) # file database
