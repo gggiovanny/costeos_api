@@ -12,6 +12,7 @@ __pycache__
 *.sqlite
 # test files
 test.*
+*_test.*
 # documents
 *.xls
 *.xlsx
