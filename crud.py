@@ -1,5 +1,46 @@
 from pony.orm import *
 import models_db as md
+import schemas as schemas
+
+
+
+@db_session
+def read_costos_fijos(skip: int = 0, limit: int = 100):
+    return list(md.CostosFijos.select()[skip:limit])
+
+@db_session
+def read_costo_fijo(id: int):
+    return md.CostosFijos[id]
+
+@db_session
+def read_costo_fijo_by_concepto(concepto: str):
+    return md.CostosFijos.get(concepto=concepto)
+
+@db_session
+def create_costo_fijo(costofijo: schemas.CostoFijoCreate):
+    newcostofijo = md.CostosFijos(
+        concepto=costofijo.concepto, 
+        costo_mensual=costofijo.costo_mensual
+    )
+    return newcostofijo
+
+@db_session
+def update_costo_fijo(id: int, updatedata: schemas.CostoFijoUpdate):
+    costofijo_updating = read_costo_fijo(id)
+    if updatedata.concepto:
+        costofijo_updating.concepto = updatedata.concepto
+    if updatedata.costo_mensual:
+        costofijo_updating.costo_mensual = updatedata.costo_mensual
+    return costofijo_updating
+
+
+
+if __name__ == "__main__":
+    md.connect()
+    c = read_costos_fijos()
+    xd = 1
+
+
 
 @db_session
 def insertData():
