@@ -57,25 +57,25 @@ class Insumo(BaseModel):
         orm_mode = True
         getter_dict = PonyOrmGetterDict
 
-# class Ingredientes(db.Entity):
-#     id: str
-#     receta: int
-#     insumo = Required(Insumos)
-#     cantidad = Required(float)
-#     # heredado del insumo
-#     @property
-#     def unidad_abrev(self):
-#         return self.insumo.unidad_abrev
-#     # heredado del insumo
-#     @property
-#     def unidad_nombre(self):
-#         return self.insumo.unidad_nombre
-#     # heredado del insumo
-#     @property
-#     def valor_por_unidad(self):
-#         return self.insumo.valor_por_unidad
-#     # costo del ingrediente para la cantidad a usar en la receta
-#     @property
-#     def costo_por_unidad_utilizada(self):
-#         return self.insumo.valor_por_unidad * self.cantidad
+class Ingrediente(BaseModel):
+    id: str
+    receta: int
+    insumo: Insumo
+    cantidad: float
+    
+    # @property
+    # def unidad_abrev(self):
+    #     return self.insumo.unidad_abrev  # heredado del insumo
+    # # heredado del insumo
+    # @property
+    # def unidad_nombre(self):
+    #     return self.insumo.unidad_nombre
+    # @property
+    # def valor_por_unidad(self):
+    #     return self.insumo.valor_por_unidad # heredado del insumo
+    
+    # costo del ingrediente para la cantidad a usar en la receta
+    # @property
+    # def costo_por_unidad_utilizada(self):
+    #     return self.insumo.valor_por_unidad * self.cantidad
 

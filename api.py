@@ -65,7 +65,15 @@ def get_unidades(skip: int = 0, limit: int = 100):
 @app.get("/insumos/", response_model=List[schemas.Insumo])
 @db_session
 def get_insumos(skip: int = 0, limit: int = 100):
-    lstinsumos = ponylist(models.Insumos.select()[skip:limit])
-    return lstinsumos
+    lst = ponylist(models.Insumos.select()[skip:limit])
+    return lst
+
+@app.get("/ingredientes/")
+@db_session
+def get_ingredientes(skip: int = 0, limit: int = 100):
+    lst = ponylist(models.Ingredientes.select()[skip:limit])
+    return lst
+
+
 
 

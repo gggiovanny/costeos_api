@@ -1,8 +1,11 @@
 from pony.orm.core import Entity, QueryResult
 from pony.utils.utils import cut_traceback
 
-def ponylist(queryresult: QueryResult, related_objects=True, with_collections=False):
-    return [recursive_to_dict(i, related_objects=related_objects, with_collections=with_collections) for i in queryresult]
+def ponylist(queryresult: QueryResult, related_objects=True, with_collections=False, **kwargs):
+    return [recursive_to_dict(i, related_objects=related_objects, with_collections=with_collections, **kwargs) for i in queryresult]
+
+def ponylistalt(queryresult: QueryResult, related_objects=True, with_collections=False, **kwargs):
+    return [recursive_to_dict_alt(i, related_objects=related_objects, with_collections=with_collections, **kwargs) for i in queryresult]
 
 def recursive_to_dict(dataset, _has_iterated=False, **kwargs):
     if isinstance(dataset, Entity):
