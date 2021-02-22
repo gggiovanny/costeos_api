@@ -5,6 +5,7 @@ from typing import List
 import models_db as models
 import crud as crud
 import schemas as schemas
+import status_messages as msgs
 
 app = FastAPI()
 models.connect()
@@ -33,5 +34,25 @@ def create_costo_fijo(costofijo: schemas.CostoFijoCreate):
     return crud.create_costo_fijo(costofijo=costofijo)
 
 @app.put("/costosfijos/{id}", response_model=schemas.CostoFijo)
+@db_session
 def update_costo_fijo(id: int, updatedata: schemas.CostoFijoUpdate):
-    return crud.update_costo_fijo(id, updatedata=updatedata)
+    try:
+        costofijo_updating = models.CostosFijos[id]
+    except:
+        raise HTTPException(status_code=400, detail=msgs.notFoundMsg(id, "CostosFijos"))
+    if updatedata.concepto:
+        costofijo_updating.concepto = updatedata.concepto
+    if updatedata.costo_mensual:
+        costofijo_updating.costo_mensual = updatedata.costo_mensual
+    return costofijo_updating
+
+@app.delete("/costosfijos/{id}")
+@db_session
+def delete_costo_fijo(id: int):
+    try:
+        costo_deleting = models.CostosFijos[id]
+    except:
+        raise HTTPException(status_code=400, detail=msgs.notFoundMsg(id, "CostosFijos"))
+    costo_deleting.delete()
+    return costo_deleting
+

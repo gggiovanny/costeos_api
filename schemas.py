@@ -27,5 +27,4 @@ class CostoFijo(CostoFijoBase):
     class Config:
         orm_mode = True
         getter_dict = PonyOrmGetterDict
-        
-        
+
