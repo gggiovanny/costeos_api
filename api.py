@@ -6,6 +6,7 @@ import models_db as models
 import crud as crud
 import schemas as schemas
 import status_messages as msgs
+from api_response_tools import *
 
 app = FastAPI()
 models.connect()
@@ -55,4 +56,16 @@ def delete_costo_fijo(id: int):
         raise HTTPException(status_code=400, detail=msgs.notFoundMsg(id, "CostosFijos"))
     costo_deleting.delete()
     return costo_deleting
+
+@app.get("/unidades/", response_model=List[schemas.Unidad])
+@db_session
+def get_unidades(skip: int = 0, limit: int = 100):
+    return ponylist(models.Unidades.select()[skip:limit])
+
+@app.get("/insumos/", response_model=List[schemas.Insumo])
+@db_session
+def get_insumos(skip: int = 0, limit: int = 100):
+    lstinsumos = ponylist(models.Insumos.select()[skip:limit])
+    return lstinsumos
+
 
