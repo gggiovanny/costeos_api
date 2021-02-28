@@ -1,5 +1,6 @@
 from pony.orm.core import Entity, QueryResult
 from pony.utils.utils import cut_traceback
+from pydantic import BaseModel
 
 
 def ponylist(queryresult: QueryResult, **kwargs):
@@ -67,3 +68,20 @@ def recursive_to_dict_alt(obj, only=None, exclude=None, with_collections=False, 
                     value = value[0]
         result[attr.name] = value
     return result
+
+
+def cleandict(modeldata: BaseModel):
+    """
+    Convierte una instancia de BaseModel a dict y
+    quita pares de datos cuyo valor sea None.
+    Util para obtener los datos recibidos para hacer update.
+
+    Args:
+        modeldata (BaseModel):
+
+    """
+    return {
+        k: v
+        for k, v in modeldata.dict().items()
+        if v is not None
+    }

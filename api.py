@@ -1,9 +1,9 @@
 from fastapi import Depends, FastAPI, HTTPException
 from pony.orm import db_session
-import time
 from typing import List
+
+from pydantic.main import BaseModel
 import models_db as models
-import crud as crud
 import schemas as schemas
 import status_messages as msgs
 from api_response_tools import *
@@ -28,37 +28,42 @@ async def root():
     return {'bienvenida': '¡Bienvenid@ a la API de costeos!'}
 
 
+###### Costos Fijos ######
+
 @app.get("/costosfijos/", response_model=List[schemas.CostoFijo])
+@db_session
 def get_costos_fijos(skip: int = 0, limit: int = 100):
-    return crud.read_costos_fijos(skip=skip, limit=limit)
+    return ponylist(models.CostosFijos.select()[skip:limit])
 
 
 @app.get("/costosfijos/{id}", response_model=schemas.CostoFijo)
+@db_session
 def get_costo_fijo(id: int):
-    return crud.read_costo_fijo(id)
+    try:
+        data = models.CostosFijos[id]
+    except:
+        raise HTTPException(400, msgs.notFoundMsg(id, "Costo fijo"))
+    return data
 
 
 @app.post("/costosfijos/", response_model=schemas.CostoFijo)
+@db_session
 def create_costo_fijo(costofijo: schemas.CostoFijoCreate):
-    duplicated = crud.read_costo_fijo_by_concepto(costofijo.concepto)
+    duplicated = models.CostosFijos.get(concepto=costofijo.concepto)
     if duplicated:
         raise HTTPException(
-            status_code=400, detail="Concepto {} repetido".format(costofijo.concepto))
-    return crud.create_costo_fijo(costofijo=costofijo)
+            status_code=400, detail=msgs.duplicatedMsg(costofijo.concepto, "Costo Fijo", "concepto"))
+    return models.CostosFijos(
+        concepto=costofijo.concepto,
+        costo_mensual=costofijo.costo_mensual
+    )
 
 
 @app.put("/costosfijos/{id}", response_model=schemas.CostoFijo)
 @db_session
 def update_costo_fijo(id: int, updatedata: schemas.CostoFijoUpdate):
-    try:
-        costofijo_updating = models.CostosFijos[id]
-    except:
-        raise HTTPException(
-            status_code=400, detail=msgs.notFoundMsg(id, "CostosFijos"))
-    if updatedata.concepto:
-        costofijo_updating.concepto = updatedata.concepto
-    if updatedata.costo_mensual:
-        costofijo_updating.costo_mensual = updatedata.costo_mensual
+    costofijo_updating = get_costo_fijo(id)
+    costofijo_updating.set(**cleandict(updatedata))
     return costofijo_updating
 
 
@@ -69,15 +74,61 @@ def delete_costo_fijo(id: int):
         costo_deleting = models.CostosFijos[id]
     except:
         raise HTTPException(
-            status_code=400, detail=msgs.notFoundMsg(id, "CostosFijos"))
+            status_code=400, detail=msgs.notFoundMsg(id, "Costo Fijo"))
     costo_deleting.delete()
     return costo_deleting
 
+
+###### Unidades ######
 
 @app.get("/unidades/", response_model=List[schemas.Unidad])
 @db_session
 def get_unidades(skip: int = 0, limit: int = 100):
     return ponylist(models.Unidades.select()[skip:limit])
+
+
+@app.get('/unidades/{id}', response_model=schemas.Unidad)
+@db_session
+def get_unidad(id: int):
+    try:
+        data = models.Unidades[id]
+    except:
+        raise HTTPException(400, msgs.notFoundMsg(id, "Unidad"))
+    return data
+
+
+@app.post("/unidades/", response_model=schemas.Unidad)
+@db_session
+def create_unidad(unidad: schemas.UnidadCreate):
+    duplicated = models.Unidades.get(nombre=unidad.nombre)
+    if duplicated:
+        raise HTTPException(
+            status_code=400, detail=msgs.duplicatedMsg(unidad.nombre, "Unidad", "nombre"))
+    new = models.Unidades(
+        nombre=unidad.nombre,
+        abrev=unidad.abrev
+    )
+    return new
+
+
+@app.delete("/unidades/{id}")
+@db_session
+def delete_unidad(id: int):
+    data_del = get_unidad(id)
+    data_del.delete()
+    return data_del
+
+
+@app.put("/unidades/{id}", response_model=schemas.Unidad)
+@db_session
+def update_unidad(id: int, updatedata: schemas.UnidadUpdate):
+    data_updating = get_unidad(id)
+    data_updating.set(**cleandict(updatedata))
+    return data_updating
+
+
+
+
 
 
 @app.get("/insumos/", response_model=List[schemas.Insumo])
