@@ -1,11 +1,18 @@
 from pony.orm.core import Entity, QueryResult
 from pony.utils.utils import cut_traceback
 
-def ponylist(queryresult: QueryResult, related_objects=True, with_collections=False, **kwargs):
+
+def ponylist(queryresult: QueryResult, **kwargs):
+    return [i.to_dict(**kwargs) for i in queryresult]
+
+
+def ponylistrecursive(queryresult: QueryResult, related_objects=True, with_collections=False, **kwargs):
     return [recursive_to_dict(i, related_objects=related_objects, with_collections=with_collections, **kwargs) for i in queryresult]
 
-def ponylistalt(queryresult: QueryResult, related_objects=True, with_collections=False, **kwargs):
+
+def ponylistrecursivealt(queryresult: QueryResult, related_objects=True, with_collections=False, **kwargs):
     return [recursive_to_dict_alt(i, related_objects=related_objects, with_collections=with_collections, **kwargs) for i in queryresult]
+
 
 def recursive_to_dict(dataset, _has_iterated=False, **kwargs):
     if isinstance(dataset, Entity):
@@ -28,16 +35,18 @@ def recursive_to_dict(dataset, _has_iterated=False, **kwargs):
                                                             **kwargs))
                 dataset[key] = value_list
         if isinstance(value, Entity) and not _has_iterated:
-           dataset[key] = recursive_to_dict(value, True, **kwargs)
+            dataset[key] = recursive_to_dict(value, True, **kwargs)
         elif isinstance(value, Entity) and _has_iterated:
             delete_these.append(key)
     for deletable_key in delete_these:
         del dataset[deletable_key]
     return dataset
 
+
 @cut_traceback
 def recursive_to_dict_alt(obj, only=None, exclude=None, with_collections=False, with_lazy=False, related_objects=False, depth=1):
-    attrs = obj.__class__._get_attrs_(only, exclude, with_collections, with_lazy)
+    attrs = obj.__class__._get_attrs_(
+        only, exclude, with_collections, with_lazy)
     result = {}
     for attr in attrs:
         value = attr.__get__(obj)
@@ -51,9 +60,10 @@ def recursive_to_dict_alt(obj, only=None, exclude=None, with_collections=False, 
         elif attr.is_relation and value is not None:
             if related_objects and depth - 1 >= 0:
                 value = value.to_dict(with_collections=with_collections, with_lazy=with_lazy,
-                                        related_objects=related_objects)
+                                      related_objects=related_objects)
             else:
                 value = value._get_raw_pkval_()
-                if not obj._pk_is_composite_: value = value[0]
+                if not obj._pk_is_composite_:
+                    value = value[0]
         result[attr.name] = value
     return result
