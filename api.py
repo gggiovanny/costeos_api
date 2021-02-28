@@ -7,9 +7,20 @@ import crud as crud
 import schemas as schemas
 import status_messages as msgs
 from api_response_tools import *
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 models.connect()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost",
+        "http://localhost:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -31,8 +42,10 @@ def get_costo_fijo(id: int):
 def create_costo_fijo(costofijo: schemas.CostoFijoCreate):
     duplicated = crud.read_costo_fijo_by_concepto(costofijo.concepto)
     if duplicated:
-        raise HTTPException(status_code=400, detail="Concepto {} repetido".format(costofijo.concepto))
+        raise HTTPException(
+            status_code=400, detail="Concepto {} repetido".format(costofijo.concepto))
     return crud.create_costo_fijo(costofijo=costofijo)
+
 
 @app.put("/costosfijos/{id}", response_model=schemas.CostoFijo)
 @db_session
@@ -40,12 +53,14 @@ def update_costo_fijo(id: int, updatedata: schemas.CostoFijoUpdate):
     try:
         costofijo_updating = models.CostosFijos[id]
     except:
-        raise HTTPException(status_code=400, detail=msgs.notFoundMsg(id, "CostosFijos"))
+        raise HTTPException(
+            status_code=400, detail=msgs.notFoundMsg(id, "CostosFijos"))
     if updatedata.concepto:
         costofijo_updating.concepto = updatedata.concepto
     if updatedata.costo_mensual:
         costofijo_updating.costo_mensual = updatedata.costo_mensual
     return costofijo_updating
+
 
 @app.delete("/costosfijos/{id}")
 @db_session
@@ -53,14 +68,17 @@ def delete_costo_fijo(id: int):
     try:
         costo_deleting = models.CostosFijos[id]
     except:
-        raise HTTPException(status_code=400, detail=msgs.notFoundMsg(id, "CostosFijos"))
+        raise HTTPException(
+            status_code=400, detail=msgs.notFoundMsg(id, "CostosFijos"))
     costo_deleting.delete()
     return costo_deleting
+
 
 @app.get("/unidades/", response_model=List[schemas.Unidad])
 @db_session
 def get_unidades(skip: int = 0, limit: int = 100):
     return ponylist(models.Unidades.select()[skip:limit])
+
 
 @app.get("/insumos/", response_model=List[schemas.Insumo])
 @db_session
@@ -68,12 +86,9 @@ def get_insumos(skip: int = 0, limit: int = 100):
     lst = ponylist(models.Insumos.select()[skip:limit])
     return lst
 
+
 @app.get("/ingredientes/")
 @db_session
 def get_ingredientes(skip: int = 0, limit: int = 100):
     lst = ponylist(models.Ingredientes.select()[skip:limit])
     return lst
-
-
-
-
