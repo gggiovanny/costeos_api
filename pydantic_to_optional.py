@@ -1,7 +1,6 @@
+# tomado de https://github.com/samuelcolvin/pydantic/issues/2272
 from copy import deepcopy
-
 from typing import Optional, Type, TypeVar
-
 from pydantic import BaseModel, create_model
 
 BaseModelT = TypeVar('BaseModelT', bound=BaseModel)
