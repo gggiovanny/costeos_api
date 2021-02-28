@@ -59,7 +59,7 @@ class UnidadUpdate(to_optional(UnidadBase)):
 
 class Unidad(UnidadBase):
     id: int
-    
+
     class Config:
         orm_mode = True
         getter_dict = PonyOrmGetterDict
@@ -110,7 +110,7 @@ class IngredienteUpdate(to_optional(IngredienteBase)):
 class Ingrediente(IngredienteBase):
     id: str
     # faltan propiedades calculadas por ponyorm
-    
+
     class Config:
         orm_mode = True
         getter_dict = PonyOrmGetterDict
@@ -124,15 +124,18 @@ class RecetaBase(BaseModel):
     tiempo_elaboracion: float
     # falta propiedad de costo
 
+
 class RecetaCreate(RecetaBase):
     pass
+
 
 class RecetaUpdate(to_optional(RecetaBase)):
     pass
 
+
 class Receta(RecetaBase):
     id: int
-    
+
     class Config:
         orm_mode = True
         getter_dict = PonyOrmGetterDict

@@ -127,10 +127,6 @@ def update_unidad(id: int, updatedata: schemas.UnidadUpdate):
     return data_updating
 
 
-
-
-
-
 @app.get("/insumos/", response_model=List[schemas.Insumo])
 @db_session
 def get_insumos(skip: int = 0, limit: int = 100):
