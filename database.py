@@ -15,7 +15,7 @@ def connect(use_sqlite=False):
                 create_db=True)
     else:
         db.bind(provider='postgres', user='', password='', host='',
-                database=DATABASE_URL, sslmode='require')
+                database=DATABASE_URL, sslmode='require', create_db=True)
 
     # debug mode: show querys
     set_sql_debug(True)
