@@ -16,6 +16,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost",
         "http://localhost:3000",
+        "https://gggiovanny.github.io/costeos_app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
