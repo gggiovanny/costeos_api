@@ -8,7 +8,7 @@ DATABASE_URL = os.environ['DATABASE_URL']
 db = Database()
 
 
-def connect(use_sqlite=False):
+def connect(use_sqlite=True):
     # conectando a la base de datos
     if use_sqlite:
         db.bind(provider='sqlite', filename='cache.sqlite',
