@@ -8,14 +8,13 @@ DATABASE_URL = os.environ['DATABASE_URL']
 db = Database()
 
 
-def connect(use_sqlite=True):
+def connect(use_sqlite=False):
     # conectando a la base de datos
     if use_sqlite:
         db.bind(provider='sqlite', filename='cache.sqlite',
                 create_db=True)
     else:
-        db.bind(provider='postgres', user='', password='', host='',
-                database=DATABASE_URL, sslmode='require', create_db=True)
+        db.bind(provider='postgres', dsn=DATABASE_URL, sslmode='require')
 
     # debug mode: show querys
     set_sql_debug(True)
