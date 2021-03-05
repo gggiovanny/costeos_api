@@ -17,6 +17,7 @@ app.add_middleware(
         "http://localhost",
         "http://localhost:3000",
         "https://gggiovanny.github.io",
+        "https://costeosapp.netlify.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
