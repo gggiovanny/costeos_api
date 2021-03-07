@@ -15,13 +15,11 @@ pony == 0.7.14
 
 # D:\Files\Documents\source\costeos_api\api.py: 5
 # D:\Files\Documents\source\costeos_api\api_response_tools.py: 3
+# D:\Files\Documents\source\costeos_api\config.py: 1
 # D:\Files\Documents\source\costeos_api\pydantic_to_optional.py: 4
 # D:\Files\Documents\source\costeos_api\schemas.py: 3,4
 # D:\Files\Documents\source\costeos_api\status_messages.py: 1
 pydantic == 1.7.3
 
-# postgre driver
-psycopg2_binary == 2.8.6
-
-# api server
-uvicorn==0.13.3
+# D:\Files\Documents\source\costeos_api\config.py: 2
+python_dotenv == 0.15.0
