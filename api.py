@@ -131,10 +131,10 @@ def update_unidad(id: int, updatedata: schemas.UnidadUpdate):
 
 ###### Insumos ######
 
-@app.get("/insumos/", response_model=List[schemas.Insumo])
+@app.get("/insumos/", response_model=List[schemas.InsumoDetailed])
 @db_session
 def get_insumos(skip: int = 0, limit: int = 100):
-    return ponylist(models.Insumos.select()[skip:limit])
+    return ponylistrecursive(models.Insumos.select()[skip:limit])
 
 
 @db_session
@@ -146,9 +146,10 @@ def _get_insumo(id: int):
     return data
 
 
-@app.get("/insumos/{id}", response_model=schemas.Insumo)
+@app.get("/insumos/{id}", response_model=schemas.InsumoDetailed)
+@db_session
 def get_insumo(id: int):
-    return _get_insumo(id).to_dict()
+    return recursive_to_dict(_get_insumo(id))
 
 
 @app.post("/insumos/", response_model=schemas.Insumo)
@@ -164,10 +165,12 @@ def update_insumo(id: int, updatedata: schemas.InsumoUpdate):
     data_updating.set(**cleandict(updatedata))
     return data_updating.to_dict()
 
+
 @app.delete("/insumos/{id}")
 @db_session
 def delete_insumo(id: int):
     return _get_insumo(id).delete()
+
 
 @app.get("/ingredientes/")
 @db_session

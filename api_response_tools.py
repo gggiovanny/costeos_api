@@ -3,19 +3,23 @@ from pony.utils.utils import cut_traceback
 from pydantic import BaseModel
 
 
+def recursive_to_dict(dataset, related_objects=True, with_collections=False, **kwargs):
+    return __recursive_to_dict(dataset, related_objects=related_objects, with_collections=with_collections, **kwargs)
+
+
 def ponylist(queryresult: QueryResult, **kwargs):
     return [i.to_dict(**kwargs) for i in queryresult]
 
 
 def ponylistrecursive(queryresult: QueryResult, related_objects=True, with_collections=False, **kwargs):
-    return [recursive_to_dict(i, related_objects=related_objects, with_collections=with_collections, **kwargs) for i in queryresult]
+    return [__recursive_to_dict(i, related_objects=related_objects, with_collections=with_collections, **kwargs) for i in queryresult]
 
 
 def ponylistrecursivealt(queryresult: QueryResult, related_objects=True, with_collections=False, **kwargs):
     return [recursive_to_dict_alt(i, related_objects=related_objects, with_collections=with_collections, **kwargs) for i in queryresult]
 
 
-def recursive_to_dict(dataset, _has_iterated=False, **kwargs):
+def __recursive_to_dict(dataset, _has_iterated=False, **kwargs):
     if isinstance(dataset, Entity):
         dataset = dataset.to_dict(**kwargs)
     delete_these = []
@@ -32,11 +36,11 @@ def recursive_to_dict(dataset, _has_iterated=False, **kwargs):
                 value_list = []
                 for iterable in value:
                     if isinstance(iterable, Entity):
-                        value_list.append(recursive_to_dict(iterable, True,
-                                                            **kwargs))
+                        value_list.append(__recursive_to_dict(iterable, True,
+                                                              **kwargs))
                 dataset[key] = value_list
         if isinstance(value, Entity) and not _has_iterated:
-            dataset[key] = recursive_to_dict(value, True, **kwargs)
+            dataset[key] = __recursive_to_dict(value, True, **kwargs)
         elif isinstance(value, Entity) and _has_iterated:
             delete_these.append(key)
     for deletable_key in delete_these:

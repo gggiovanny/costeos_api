@@ -90,6 +90,9 @@ class Insumo(InsumoBase):
         orm_mode = True
         getter_dict = PonyOrmGetterDict
 
+class InsumoDetailed(Insumo):
+    unidad: Unidad
+
 
 ###### Ingredientes ######
 
