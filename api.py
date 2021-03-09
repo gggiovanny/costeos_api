@@ -33,13 +33,13 @@ async def root():
 ###### Costos Fijos ######
 
 @app.get("/costosfijos/", response_model=List[schemas.CostoFijo])
-@db_session
+@db_session(sql_debug=True)
 def get_costos_fijos(skip: int = 0, limit: int = 100):
     return ponylist(models.CostosFijos.select()[skip:limit])
 
 
 @app.get("/costosfijos/{id}", response_model=schemas.CostoFijo)
-@db_session
+@db_session(sql_debug=True)
 def get_costo_fijo(id: int):
     try:
         data = models.CostosFijos[id]
@@ -49,7 +49,7 @@ def get_costo_fijo(id: int):
 
 
 @app.post("/costosfijos/", response_model=schemas.CostoFijo)
-@db_session
+@db_session(sql_debug=True)
 def create_costo_fijo(costofijo: schemas.CostoFijoCreate):
     duplicated = models.CostosFijos.get(concepto=costofijo.concepto)
     if duplicated:
@@ -62,7 +62,7 @@ def create_costo_fijo(costofijo: schemas.CostoFijoCreate):
 
 
 @app.put("/costosfijos/{id}", response_model=schemas.CostoFijo)
-@db_session
+@db_session(sql_debug=True)
 def update_costo_fijo(id: int, updatedata: schemas.CostoFijoUpdate):
     costofijo_updating = get_costo_fijo(id)
     costofijo_updating.set(**cleandict(updatedata))
@@ -70,7 +70,7 @@ def update_costo_fijo(id: int, updatedata: schemas.CostoFijoUpdate):
 
 
 @app.delete("/costosfijos/{id}")
-@db_session
+@db_session(sql_debug=True)
 def delete_costo_fijo(id: int):
     try:
         costo_deleting = models.CostosFijos[id]
@@ -84,13 +84,13 @@ def delete_costo_fijo(id: int):
 ###### Unidades ######
 
 @app.get("/unidades/", response_model=List[schemas.Unidad])
-@db_session
+@db_session(sql_debug=True)
 def get_unidades(skip: int = 0, limit: int = 100):
     return ponylist(models.Unidades.select()[skip:limit])
 
 
 @app.get('/unidades/{id}', response_model=schemas.Unidad)
-@db_session
+@db_session(sql_debug=True)
 def get_unidad(id: int):
     try:
         data = models.Unidades[id]
@@ -100,7 +100,7 @@ def get_unidad(id: int):
 
 
 @app.post("/unidades/", response_model=schemas.Unidad)
-@db_session
+@db_session(sql_debug=True)
 def create_unidad(unidad: schemas.UnidadCreate):
     duplicated = models.Unidades.get(nombre=unidad.nombre)
     if duplicated:
@@ -114,7 +114,7 @@ def create_unidad(unidad: schemas.UnidadCreate):
 
 
 @app.delete("/unidades/{id}")
-@db_session
+@db_session(sql_debug=True)
 def delete_unidad(id: int):
     data_del = get_unidad(id)
     data_del.delete()
@@ -122,7 +122,7 @@ def delete_unidad(id: int):
 
 
 @app.put("/unidades/{id}", response_model=schemas.Unidad)
-@db_session
+@db_session(sql_debug=True)
 def update_unidad(id: int, updatedata: schemas.UnidadUpdate):
     data_updating = get_unidad(id)
     data_updating.set(**cleandict(updatedata))
@@ -132,12 +132,12 @@ def update_unidad(id: int, updatedata: schemas.UnidadUpdate):
 ###### Insumos ######
 
 @app.get("/insumos/", response_model=List[schemas.InsumoDetailed])
-@db_session
+@db_session(sql_debug=True)
 def get_insumos(skip: int = 0, limit: int = 100):
     return ponylistrecursive(models.Insumos.select()[skip:limit])
 
 
-@db_session
+@db_session(sql_debug=True)
 def _get_insumo(id: int):
     try:
         data = models.Insumos[id]
@@ -147,19 +147,19 @@ def _get_insumo(id: int):
 
 
 @app.get("/insumos/{id}", response_model=schemas.InsumoDetailed)
-@db_session
+@db_session(sql_debug=True)
 def get_insumo(id: int):
     return recursive_to_dict(_get_insumo(id))
 
 
 @app.post("/insumos/", response_model=schemas.Insumo)
-@db_session
+@db_session(sql_debug=True)
 def create_insumo(insumo: schemas.InsumoCreate):
     return models.Insumos(**insumo.dict()).to_dict()
 
 
 @app.put("/insumos/{id}", response_model=schemas.Insumo)
-@db_session
+@db_session(sql_debug=True)
 def update_insumo(id: int, updatedata: schemas.InsumoUpdate):
     data_updating = _get_insumo(id)
     data_updating.set(**cleandict(updatedata))
@@ -167,13 +167,13 @@ def update_insumo(id: int, updatedata: schemas.InsumoUpdate):
 
 
 @app.delete("/insumos/{id}")
-@db_session
+@db_session(sql_debug=True)
 def delete_insumo(id: int):
     return _get_insumo(id).delete()
 
 
 @app.get("/ingredientes/")
-@db_session
+@db_session(sql_debug=True)
 def get_ingredientes(skip: int = 0, limit: int = 100):
     lst = ponylist(models.Ingredientes.select()[skip:limit])
     return lst
